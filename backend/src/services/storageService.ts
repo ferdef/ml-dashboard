@@ -24,15 +24,11 @@ export async function getData(collection: string): Promise<any[]> {
 
 export async function getById(collection: string, id: string): Promise<any | null> {
   try {
-    const filePath = getCollectionFile(collection);
+    const items = await getData(collection);
 
-    if (!fs.existsSync(filePath)) {
-      await fs.promises.writeFile(filePath, JSON.stringify([]));
-      return null;
-    }
+    const item = items.find(item => item.id === id);
 
-    const data = await fs.promises.readFile(filePath, 'utf8');
-    return JSON.parse(data)[id];
+    return item || null;
   } catch (error) {
     console.error(`Error getting data from ${collection}:`, error);
     throw error;
