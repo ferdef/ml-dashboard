@@ -1,8 +1,11 @@
 import fs from "fs";
 import path from "path";
+import { v4 as uuidv4 } from 'uuid';
 
 export async function saveData(collection: string, data: any[]): Promise<void> {
+  const filePath = getCollectionFile(collection);
 
+  await fs.promises.writeFile(filePath, JSON.stringify(data));
 }
 
 export async function getData(collection: string): Promise<any[]> {
@@ -37,18 +40,42 @@ export async function getById(collection: string, id: string): Promise<any | nul
 
 export async function createItem(collection: string, item: any): Promise<any> {
   try {
+    const items = await getData(collection);
 
+    const newItem = {
+      ...item,
+      id: uuidv4(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    items.push(newItem);
+
+    await saveData(collection, items);
+
+    return newItem;
   } catch (error) {
-    console.error(`Error getting data from ${collection}:`, error);
+    console.error(`Error creating new item in ${collection}:`, error);
     throw error;
   }
 }
 
 export async function deleteItem(collection: string, id: string): Promise<boolean> {
   try {
-    return false;
+    const items = await getData(collection);
+    const index = items.findIndex(item => item.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    items.splice(index, 1);
+
+    await saveData(collection, items);
+
+    return true;
   } catch (error) {
-    console.error(`Error getting data from ${collection}:`, error);
+    console.error(`Error deleting item in ${collection}:`, error);
     throw error;
   }
 }
