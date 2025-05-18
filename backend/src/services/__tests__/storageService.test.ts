@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { createItem, getById, getData } from '../storageService';
+import { createItem, deleteItem, getById, getData } from '../storageService';
 import { mockModels } from '../../__fixtures__/mockModels';
+import { groupCollapsed } from 'console';
 
 jest.mock('fs', () => ({
   promises: {
@@ -108,10 +109,29 @@ describe('storageService', () => {
 
   describe('deleteItem', () => {
     it('should return false if the item does not exist', async () => {
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
 
+      const deleted = await deleteItem('models', 'model-none');
+      expect(deleted).toBeFalsy();
     });
     it('should return true if the item exists', async () => {
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
 
+      const itemsFirst = await getData('models');
+      expect(itemsFirst.length).toBe(2);
+
+      const deleted = await deleteItem('models', 'model-456');
+      expect(deleted).toBeTruthy();
+
+      expect(fs.promises.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('models.json'),
+        expect.any(String)
+      );
+
+      const savedData = JSON.parse((fs.promises.writeFile as jest.Mock).mock.calls[0][1]);
+      expect(savedData).toHaveLength(mockModels.length - 1);
     });
   });
 });
