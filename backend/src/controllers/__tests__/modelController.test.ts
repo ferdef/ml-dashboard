@@ -1,0 +1,52 @@
+import request from 'supertest';
+import app from '../../app';
+import * as storageService from '../../services/storageService';
+import { mockModels, singleMockModel } from '../../__fixtures__/mockModels';
+
+jest.mock('../../services/storageService');
+
+describe('Model Controller', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return all models', async () => {
+    (storageService.getData as jest.Mock).mockResolvedValue(mockModels);
+
+    const response = await request(app).get('/api/models');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockModels);
+    expect(storageService.getData).toHaveBeenCalledWith('models');
+  });
+
+  it('Should handle errors', async () => {
+    (storageService.getData as jest.Mock).mockRejectedValue(new Error('Test Error'));
+
+    const response = await request(app).get('/api/models');
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error');
+  });
+});
+
+describe('GET /api/models/:id', () => {
+  it('should return a specific model if it exists', async () => {
+    (storageService.getById as jest.Mock).mockResolvedValue(singleMockModel);
+
+    const response = await request(app).get(`/api/models/${singleMockModel.id}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(singleMockModel);
+    expect(storageService.getById).toHaveBeenCalledWith('models', singleMockModel.id);
+  });
+
+  it('should return 404 if model does not exist', async () => {
+    (storageService.getById as jest.Mock).mockResolvedValue(null);
+
+    const response = await request(app).get(`/api/models/unexisting`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error');
+  });
+});
