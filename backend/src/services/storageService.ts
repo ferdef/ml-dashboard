@@ -80,6 +80,34 @@ export async function deleteItem(collection: string, id: string): Promise<boolea
   }
 }
 
+export async function update(collection: string, id: string, item: any): Promise<any | null> {
+  try {
+    const items = await getData(collection);
+
+    const index = items.findIndex(item => item.ide === id);
+
+    if (index === -1) {
+      return null;
+    }
+
+    const updatedItem = {
+      ...items[index],
+      ...item,
+      id: id,
+      updatedAt: new Date().toISOString()
+    };
+
+    items[index] = updatedItem;
+
+    await saveData(collection, items);
+
+    return updatedItem;
+  } catch (error) {
+    console.error(`Error updating ${collection} with ID ${id}:`, error);
+    throw error;
+  }
+}
+
 function getCollectionFile(collection: string): string {
   if(!['models', 'run', 'metrics'].includes(collection)) {
     throw new Error(`Invalid Collection: ${collection}`);
