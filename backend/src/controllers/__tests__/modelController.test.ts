@@ -50,3 +50,31 @@ describe('GET /api/models/:id', () => {
     expect(response.body).toHaveProperty('error');
   });
 });
+
+describe('POST /api/models', () => {
+  it('should fail if name or version are not provided', async () => {
+    const noVersion = {
+      name: "Test Model"
+    };
+
+    const noName = {
+      version: "v1.0.0"
+    };
+
+    const responseA = await request(app)
+      .post('/api/models')
+      .send(noVersion);
+
+    expect(responseA.status).toBe(400);
+    expect(responseA.body).toHaveProperty('error');
+    expect(storageService.createItem).not.toHaveBeenCalled();
+
+    const responseB = await request(app)
+      .post('/api/models')
+      .send(noName);
+
+    expect(responseB.status).toBe(400);
+    expect(responseA.body).toHaveProperty('error');
+    expect(storageService.createItem).not.toHaveBeenCalled();
+  });
+});
