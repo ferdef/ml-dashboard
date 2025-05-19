@@ -28,6 +28,7 @@
     "start": "node dist/app.js",
     "dev": "nodemon src/app.ts",
     "build": "tsc -p .",
-    "test": "jest"
+    "test": "jest --silent --verbose",
+    "vtest": "jest --verbose"
   }
 }
