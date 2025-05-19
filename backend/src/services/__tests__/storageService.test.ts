@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { createItem, deleteItem, getById, getData } from '../storageService';
+import { createItem, deleteItem, updateItem, getById, getData } from '../storageService';
 import { mockModels } from '../../__fixtures__/mockModels';
 import { groupCollapsed } from 'console';
 
@@ -132,6 +132,40 @@ describe('storageService', () => {
 
       const savedData = JSON.parse((fs.promises.writeFile as jest.Mock).mock.calls[0][1]);
       expect(savedData).toHaveLength(mockModels.length - 1);
+    });
+  });
+
+  describe('updateItem', () =>{
+    it('should return null if item does not exist', async () => {
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
+
+      const updated = await updateItem('models', 'model-none', {});
+      expect(updated).toBeNull();
+    });
+
+    it('should return modified item', async () => {
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
+
+      const newFields = {
+        name: "new Name"
+      };
+
+      const returnedItem = await getById('models', 'model-456');
+
+      expect(returnedItem).toHaveProperty('name');
+      expect(returnedItem.name).toBe("Dental Alignment Analyzer");
+
+      const updated = await updateItem('models', 'model-456', newFields);
+
+      expect(updated).not.toBeNull();
+      expect(updated).toHaveProperty('name');
+      expect(updated.name).toBe(newFields.name);
+      expect(fs.promises.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('models.json'),
+        expect.any(String)
+      );
     });
   });
 });

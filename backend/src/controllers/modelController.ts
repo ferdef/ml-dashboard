@@ -56,7 +56,7 @@ export async function updateModel(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const updatedModel = await storageService.update('models', id, modelData);
+    const updatedModel = await storageService.updateItem('models', id, modelData);
     res.status(200).json(updatedModel);
   } catch(error) {
     console.error(`Error updating model with ID ${req.params.id}`, error);

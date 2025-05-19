@@ -80,11 +80,11 @@ export async function deleteItem(collection: string, id: string): Promise<boolea
   }
 }
 
-export async function update(collection: string, id: string, item: any): Promise<any | null> {
+export async function updateItem(collection: string, id: string, item: any): Promise<any | null> {
   try {
     const items = await getData(collection);
 
-    const index = items.findIndex(item => item.ide === id);
+    const index = items.findIndex(item => item.id === id);
 
     if (index === -1) {
       return null;
