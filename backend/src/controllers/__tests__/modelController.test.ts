@@ -78,3 +78,29 @@ describe('POST /api/models', () => {
     expect(storageService.createItem).not.toHaveBeenCalled();
   });
 });
+
+describe('PUT /api/models/:id', () => {
+  it('should update an existing model', async () => {
+    const modelId = 'model-123';
+    const updateData = { version: "1.1.0" };
+
+    const updatedModel = {
+      id: modelId,
+      name: "Dental Alignment Analyzer",
+      version: "1.1.0",
+      updatedAt: "2025-05-08T10:00:00.000Z"
+    };
+
+    // Mock
+    (storageService.getById as jest.Mock).mockResolvedValue(updatedModel);
+    (storageService.updateItem as jest.Mock).mockResolvedValue(updatedModel);
+
+    // Petición PUT
+    const response = await request(app)
+      .put(`/api/models/${modelId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(updatedModel);
+  });
+});
