@@ -6,12 +6,17 @@ module.exports = {
     sourceType: 'module',
     ecmaVersion: 2020,
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'import'],
+  plugins: [
+    '@typescript-eslint/eslint-plugin',
+    'import',
+    'prettier',
+  ],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
+    'prettier',
   ],
   root: true,
   env: {
@@ -33,5 +38,7 @@ module.exports = {
         'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
       },
     ],
+    'prettier/prettier': 'error',
   },
+
 };
