@@ -1,6 +1,6 @@
 # ML Dashboard
 
-[![Node.js CI](https://github.com/ferdef/ml-dashboard/actions/workflows/node.js.yml/badge.svg)](https://github.com/ferdef/ml-dashboard/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/ferdef/ml-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/ferdef/ml-dashboard/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
