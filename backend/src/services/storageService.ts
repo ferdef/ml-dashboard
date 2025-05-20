@@ -1,5 +1,6 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
+
 import { v4 as uuidv4 } from 'uuid';
 
 export async function saveData(collection: string, data: any[]): Promise<void> {
@@ -13,8 +14,8 @@ export async function getData(collection: string): Promise<any[]> {
     const filePath = getCollectionFile(collection);
 
     if (!fs.existsSync(filePath)) {
-        await fs.promises.writeFile(filePath, JSON.stringify([]));
-        return [];
+      await fs.promises.writeFile(filePath, JSON.stringify([]));
+      return [];
     }
 
     const data = await fs.promises.readFile(filePath, 'utf8');
@@ -29,7 +30,7 @@ export async function getById(collection: string, id: string): Promise<any | nul
   try {
     const items = await getData(collection);
 
-    const item = items.find(item => item.id === id);
+    const item = items.find((item) => item.id === id);
 
     return item || null;
   } catch (error) {
@@ -46,7 +47,7 @@ export async function createItem(collection: string, item: any): Promise<any> {
       ...item,
       id: uuidv4(),
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     items.push(newItem);
@@ -63,7 +64,7 @@ export async function createItem(collection: string, item: any): Promise<any> {
 export async function deleteItem(collection: string, id: string): Promise<boolean> {
   try {
     const items = await getData(collection);
-    const index = items.findIndex(item => item.id === id);
+    const index = items.findIndex((item) => item.id === id);
 
     if (index === -1) {
       return false;
@@ -84,7 +85,7 @@ export async function updateItem(collection: string, id: string, item: any): Pro
   try {
     const items = await getData(collection);
 
-    const index = items.findIndex(item => item.id === id);
+    const index = items.findIndex((item) => item.id === id);
 
     if (index === -1) {
       return null;
@@ -94,7 +95,7 @@ export async function updateItem(collection: string, id: string, item: any): Pro
       ...items[index],
       ...item,
       id: id,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     items[index] = updatedItem;
@@ -109,7 +110,7 @@ export async function updateItem(collection: string, id: string, item: any): Pro
 }
 
 function getCollectionFile(collection: string): string {
-  if(!['models', 'run', 'metrics'].includes(collection)) {
+  if (!['models', 'run', 'metrics'].includes(collection)) {
     throw new Error(`Invalid Collection: ${collection}`);
   }
 

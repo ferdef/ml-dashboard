@@ -1,8 +1,9 @@
+import { groupCollapsed } from 'console';
 import fs from 'fs';
 import path from 'path';
-import { createItem, deleteItem, updateItem, getById, getData } from '../storageService';
+
 import { mockModels } from '../../__fixtures__/mockModels';
-import { groupCollapsed } from 'console';
+import { createItem, deleteItem, updateItem, getById, getData } from '../storageService';
 
 jest.mock('fs', () => ({
   promises: {
@@ -27,7 +28,7 @@ describe('storageService', () => {
 
       expect(fs.promises.writeFile).toHaveBeenCalledWith(
         expect.stringContaining('models.json'),
-        '[]'
+        '[]',
       );
     });
 
@@ -40,7 +41,10 @@ describe('storageService', () => {
       expect(result).toEqual(mockModels);
       expect(fs.existsSync).toHaveBeenCalledWith(expect.stringContaining('models.json'));
 
-      expect(fs.promises.readFile).toHaveBeenCalledWith(expect.stringContaining('models.json'), 'utf8');
+      expect(fs.promises.readFile).toHaveBeenCalledWith(
+        expect.stringContaining('models.json'),
+        'utf8',
+      );
 
       expect(fs.promises.writeFile).not.toHaveBeenCalled();
 
@@ -62,7 +66,10 @@ describe('storageService', () => {
 
       expect(result).toBeNull();
 
-      expect(fs.promises.writeFile).toHaveBeenCalledWith(expect.stringContaining('models.json'),'[]');
+      expect(fs.promises.writeFile).toHaveBeenCalledWith(
+        expect.stringContaining('models.json'),
+        '[]',
+      );
     });
 
     it('Should return an item', async () => {
@@ -81,9 +88,9 @@ describe('storageService', () => {
       (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
 
       const newItem = {
-        name: "new Item",
-        version: "1.2",
-        description: "new Description"
+        name: 'new Item',
+        version: '1.2',
+        description: 'new Description',
       };
 
       const returnedItem = await createItem('models', newItem);
@@ -98,7 +105,7 @@ describe('storageService', () => {
 
       expect(fs.promises.writeFile).toHaveBeenCalledWith(
         expect.stringContaining('models.json'),
-        expect.any(String)
+        expect.any(String),
       );
 
       const savedData = JSON.parse((fs.promises.writeFile as jest.Mock).mock.calls[0][1]);
@@ -127,7 +134,7 @@ describe('storageService', () => {
 
       expect(fs.promises.writeFile).toHaveBeenCalledWith(
         expect.stringContaining('models.json'),
-        expect.any(String)
+        expect.any(String),
       );
 
       const savedData = JSON.parse((fs.promises.writeFile as jest.Mock).mock.calls[0][1]);
@@ -135,7 +142,7 @@ describe('storageService', () => {
     });
   });
 
-  describe('updateItem', () =>{
+  describe('updateItem', () => {
     it('should return null if item does not exist', async () => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
@@ -149,13 +156,13 @@ describe('storageService', () => {
       (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockModels));
 
       const newFields = {
-        name: "new Name"
+        name: 'new Name',
       };
 
       const returnedItem = await getById('models', 'model-456');
 
       expect(returnedItem).toHaveProperty('name');
-      expect(returnedItem.name).toBe("Dental Alignment Analyzer");
+      expect(returnedItem.name).toBe('Dental Alignment Analyzer');
 
       const updated = await updateItem('models', 'model-456', newFields);
 
@@ -164,7 +171,7 @@ describe('storageService', () => {
       expect(updated.name).toBe(newFields.name);
       expect(fs.promises.writeFile).toHaveBeenCalledWith(
         expect.stringContaining('models.json'),
-        expect.any(String)
+        expect.any(String),
       );
     });
   });

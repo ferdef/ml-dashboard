@@ -1,7 +1,8 @@
 import request from 'supertest';
+
+import { mockModels, singleMockModel } from '../../__fixtures__/mockModels';
 import app from '../../app';
 import * as storageService from '../../services/storageService';
-import { mockModels, singleMockModel } from '../../__fixtures__/mockModels';
 
 jest.mock('../../services/storageService');
 
@@ -54,24 +55,20 @@ describe('GET /api/models/:id', () => {
 describe('POST /api/models', () => {
   it('should fail if name or version are not provided', async () => {
     const noVersion = {
-      name: "Test Model"
+      name: 'Test Model',
     };
 
     const noName = {
-      version: "v1.0.0"
+      version: 'v1.0.0',
     };
 
-    const responseA = await request(app)
-      .post('/api/models')
-      .send(noVersion);
+    const responseA = await request(app).post('/api/models').send(noVersion);
 
     expect(responseA.status).toBe(400);
     expect(responseA.body).toHaveProperty('error');
     expect(storageService.createItem).not.toHaveBeenCalled();
 
-    const responseB = await request(app)
-      .post('/api/models')
-      .send(noName);
+    const responseB = await request(app).post('/api/models').send(noName);
 
     expect(responseB.status).toBe(400);
     expect(responseA.body).toHaveProperty('error');
@@ -82,13 +79,13 @@ describe('POST /api/models', () => {
 describe('PUT /api/models/:id', () => {
   it('should update an existing model', async () => {
     const modelId = 'model-123';
-    const updateData = { version: "1.1.0" };
+    const updateData = { version: '1.1.0' };
 
     const updatedModel = {
       id: modelId,
-      name: "Dental Alignment Analyzer",
-      version: "1.1.0",
-      updatedAt: "2025-05-08T10:00:00.000Z"
+      name: 'Dental Alignment Analyzer',
+      version: '1.1.0',
+      updatedAt: '2025-05-08T10:00:00.000Z',
     };
 
     // Mock
@@ -96,9 +93,7 @@ describe('PUT /api/models/:id', () => {
     (storageService.updateItem as jest.Mock).mockResolvedValue(updatedModel);
 
     // Petición PUT
-    const response = await request(app)
-      .put(`/api/models/${modelId}`)
-      .send(updateData);
+    const response = await request(app).put(`/api/models/${modelId}`).send(updateData);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(updatedModel);

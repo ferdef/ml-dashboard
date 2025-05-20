@@ -1,8 +1,9 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import modelRoutes from './routes/modelRoutes';
+import express from 'express';
+
 import { defineBasicRoutes } from './routes/basics';
+import modelRoutes from './routes/modelRoutes';
 
 dotenv.config();
 const app = express();
@@ -18,7 +19,7 @@ app.use('/api/models', modelRoutes);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Unmanaged error', err);
-  res.status(500).json({ error: 'Internal Server Error'});
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 app.listen(port, () => {
