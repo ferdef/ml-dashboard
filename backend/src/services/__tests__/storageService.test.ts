@@ -1,6 +1,4 @@
-import { groupCollapsed } from 'console';
 import fs from 'fs';
-import path from 'path';
 
 import { mockModels } from '../../__fixtures__/mockModels';
 import { createItem, deleteItem, updateItem, getById, getData } from '../storageService';
