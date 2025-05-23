@@ -1,18 +1,15 @@
+// frontend/src/App.tsx
+import { Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import ModelList from './pages/ModelList';
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          ¡Tailwind CSS v3 funcionando!
-        </h1>
-        <p className="text-gray-600">
-          Esta es una configuración simple y estable de Tailwind CSS.
-        </p>
-        <button className="btn-primary mt-4">
-          Botón de ejemplo
-        </button>
-      </div>
-    </div>
+    <Layout>
+      <Routes>
+        <Route path="/models" element={<ModelList />} />
+      </Routes>
+    </Layout>
   );
 }
 

@@ -3,6 +3,23 @@ export interface MLModel {
   name: string;
   version: string;
   description?: string;
-  createdAt: string; // En el frontend usamos string en lugar de Date
-  updatedAt: string; // porque viene como string del JSON de la API
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ModelRun {
+  id: string;
+  modelId: string;
+  startTime: string;
+  endTime?: string;
+  status: 'running' | 'completed' | 'failed';
+  parameters?: Record<string, any>;
+}
+
+export interface Metric {
+  id: string;
+  runId: string;
+  name: string;
+  value: number;
+  timestamp: string;
 }
