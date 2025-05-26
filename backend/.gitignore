@@ -3,3 +3,4 @@ dist/
 data/metrics.json
 data/models.json
 data/runs.json
+.env
