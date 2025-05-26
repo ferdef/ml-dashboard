@@ -1,25 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-
 import { v4 as uuidv4 } from 'uuid';
 
-export async function saveData(collection: string, data: any[]): Promise<void> {
-  const filePath = getCollectionFile(collection);
-
-  await fs.promises.writeFile(filePath, JSON.stringify(data));
-}
+import { dynamoService } from './awsService';
 
 export async function getData(collection: string): Promise<any[]> {
   try {
-    const filePath = getCollectionFile(collection);
-
-    if (!fs.existsSync(filePath)) {
-      await fs.promises.writeFile(filePath, JSON.stringify([]));
-      return [];
-    }
-
-    const data = await fs.promises.readFile(filePath, 'utf8');
-    return JSON.parse(data);
+    const tableName = getTableName(collection);
+    return await dynamoService.getAll(tableName);
   } catch (error) {
     console.error(`Error getting data from ${collection}:`, error);
     throw error;
@@ -28,11 +14,8 @@ export async function getData(collection: string): Promise<any[]> {
 
 export async function getById(collection: string, id: string): Promise<any | null> {
   try {
-    const items = await getData(collection);
-
-    const item = items.find((item) => item.id === id);
-
-    return item || null;
+    const tableName = getTableName(collection);
+    return await dynamoService.getById(tableName, id);
   } catch (error) {
     console.error(`Error getting data from ${collection}:`, error);
     throw error;
@@ -41,8 +24,7 @@ export async function getById(collection: string, id: string): Promise<any | nul
 
 export async function createItem(collection: string, item: any): Promise<any> {
   try {
-    const items = await getData(collection);
-
+    const tableName = getTableName(collection);
     const newItem = {
       ...item,
       id: uuidv4(),
@@ -50,11 +32,7 @@ export async function createItem(collection: string, item: any): Promise<any> {
       updatedAt: new Date().toISOString(),
     };
 
-    items.push(newItem);
-
-    await saveData(collection, items);
-
-    return newItem;
+    return await dynamoService.createItem(tableName, newItem);
   } catch (error) {
     console.error(`Error creating new item in ${collection}:`, error);
     throw error;
@@ -63,18 +41,8 @@ export async function createItem(collection: string, item: any): Promise<any> {
 
 export async function deleteItem(collection: string, id: string): Promise<boolean> {
   try {
-    const items = await getData(collection);
-    const index = items.findIndex((item) => item.id === id);
-
-    if (index === -1) {
-      return false;
-    }
-
-    items.splice(index, 1);
-
-    await saveData(collection, items);
-
-    return true;
+    const tableName = getTableName(collection);
+    return await dynamoService.deleteItem(tableName, id);
   } catch (error) {
     console.error(`Error deleting item in ${collection}:`, error);
     throw error;
@@ -83,36 +51,26 @@ export async function deleteItem(collection: string, id: string): Promise<boolea
 
 export async function updateItem(collection: string, id: string, item: any): Promise<any | null> {
   try {
-    const items = await getData(collection);
-
-    const index = items.findIndex((item) => item.id === id);
-
-    if (index === -1) {
-      return null;
-    }
-
-    const updatedItem = {
-      ...items[index],
+    const tableName = getTableName(collection);
+    return await dynamoService.updateItem(tableName, id, {
       ...item,
-      id: id,
       updatedAt: new Date().toISOString(),
-    };
-
-    items[index] = updatedItem;
-
-    await saveData(collection, items);
-
-    return updatedItem;
+    });
   } catch (error) {
     console.error(`Error updating ${collection} with ID ${id}:`, error);
     throw error;
   }
 }
 
-function getCollectionFile(collection: string): string {
-  if (!['models', 'run', 'metrics'].includes(collection)) {
-    throw new Error(`Invalid Collection: ${collection}`);
+function getTableName(collection: string): string {
+  switch (collection) {
+    case 'models':
+      return process.env.DYNAMODB_MODELS_TABLE || 'ml-dashboard-models';
+    case 'runs':
+      return process.env.DYNAMODB_RUNS_TABLE || 'ml-dashboard-runs';
+    case 'metrics':
+      return process.env.DYNAMODB_METRICS_TABLE || 'ml-dashboard-metrics';
+    default:
+      throw new Error(`Invalid Collection: ${collection}`);
   }
-
-  return path.join(__dirname, `../../data/${collection}.json`);
 }
